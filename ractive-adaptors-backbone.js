@@ -72,11 +72,13 @@
 
 	'use strict';
 
-	var BackboneModelWrapper, BackboneCollectionWrapper;
+	var BackboneModelWrapper, BackboneCollectionWrapper, associative;
 
 	if ( !Ractive || !Backbone ) {
 		throw new Error( 'Could not find Ractive or Backbone! Check your paths config' );
 	}
+
+	associative = 'AssociatedModel' in Backbone;
 
 	Ractive.adaptors.Backbone = {
 		filter: function ( object ) {
@@ -112,8 +114,8 @@
 		},
 		set: function ( keypath, value ) {
 			// Only set if the model didn't originate the change itself, and
-			// only if it's an immediate child property
-			if ( !this.setting && keypath.indexOf( '.' ) === -1 ) {
+			// only if it's an immediate child property or a model supporting associations
+			if ( !this.setting && (( associative && this.value instanceof Backbone.AssociatedModel ) || keypath.indexOf( '.' ) === -1 )) {
 				this.value.set( keypath, value );
 			}
 		},
