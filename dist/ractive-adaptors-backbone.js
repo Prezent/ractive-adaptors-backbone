@@ -54,7 +54,9 @@
 			this.value.off("change", this.modelChangeHandler);
 		},
 		get: function get() {
-			return this.value.toJSON();
+			// Ignore custom toJSON functions, just use the original that clones the attributes.
+			// This ensures that ractive.get('foo.bar') equals ractive.get('foo').get('bar')
+			return adaptor.Backbone.Model.prototype.toJSON.call(this.value);
 		},
 		set: function set(keypath, value) {
 			// Only set if the model didn't originate the change itself, and
